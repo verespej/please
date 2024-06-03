@@ -94,5 +94,5 @@ if echo $response_content | jq -e '.error' >/dev/null; then
 fi
 
 command_text=$(echo $response_content | jq -r '.choices[].message.content')
-print "Solution: $command_text\n"
+print "Solution: $command_text"
 echo $command_text
