@@ -1,0 +1,21 @@
+# macOS files
+.DS_Store
+
+# Editor files
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+*.vscode
