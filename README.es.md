@@ -11,11 +11,11 @@ Documentación en idiomas no españoles:
 
 `porfa` permite usar lenguaje natural en la línea de comandos.
 
-Intenta minimizar las dependencias y el mantenimiento requerido al:
-1. Estar implementado como un script de shell
-2. Depender solo de herramientas comunes de la línea de comandos
+Para minimizar las dependencias y el mantenimiento requerido:
+1. Está implementado como un script de shell
+2. Depende solo de herramientas comunes de la línea de comandos
 
-Sin embargo, tiene una dependencia _externa_ importante, que es la [API de OpenAI](https://platform.openai.com/docs/overview). Así es como convierte el lenguaje natural en algo que podemos ejecutar en la línea de comandos.
+Tiene una dependencia _externa_ importante, que es la [API de OpenAI](https://platform.openai.com/docs/overview). Así es como convierte el lenguaje natural en algo que podemos ejecutar en la línea de comandos.
 
 # Instalación
 
@@ -54,7 +54,22 @@ Agrega lo siguiente a la configuración de tu shell (por ejemplo, `~/.zshrc`, `~
 # Asegurar que la ubicación del script esté en PATH
 ! (echo ":$PATH:" | grep -q ":/usr/local/bin:") && export PATH=$PATH:/usr/local/bin
 export PLEASE_CONFIG_SHELL_TYPE="<zsh, bash, etc.>"
-export PLEASE_CONFIG_OPENAI_API_KEY="<tu clave de OpenAI>"
+export PLEASE_CONFIG_OPENAI_API_KEY="<your OpenAI key>"
+```
+
+Recarga la configuración del shell:
+```
+source <tu archivo de configuración del shell>
+```
+
+## Configuración de la Ejecución Automática de Comandos
+
+Esto es opcional. Ejecuta automáticamente el mandato resultante de la solicitud.
+
+Si lo usas, ten cuidado. Aunque tiene una protección ligera contra comandos destructivos, hay muchos que no previene.
+
+Agrega lo siguiente a la configuración de tu shell (por ejemplo, `~/.zshrc`, `~/.bashrc`, etc.)
+```
 porfa() {
   command_text=$(/usr/local/bin/porfa "$@") && {
     restricted_commands=(">" "bash" "chmod" "chown" "cp" "curl" "dd" "fdisk" "mkfs" "mv" "parted" "rm" "wget" "zsh")
@@ -147,17 +162,32 @@ COMMAND: echo "Soy un experto en comandos zsh."
 WARNING: The command has NOT been executed. This is because 'zsh' is a potentially destructive or otherwise dangerous operation. If you wish to execute the command, you must do so manually. DON'T execute it unless you fully understand what it does.
 ```
 
+## Limitaciones Conocidas
+
+Se aplican las reglas estándar de shell. En particular, ciertos caracteres tienen un significado especial en el shell. Las solicitudes que contienen dichos caracteres pueden no pasarse al programa como se espera.
+
+Por ejemplo, `>` se usa para la redirección de salida. Por lo tanto, la siguiente solicitud no funcionará:
+```
+porfa determina si 3 > 2
+```
+
+En su lugar, debe escribirlo así:
+```
+porfa determina si 3 \> 2
+```
+
 # Preguntas de Diseño
 
 P: ¿Por qué usar un script de shell en lugar de algo como python o node?
-R: Un objetivo es minimizar la complejidad potencial de las dependencias
+R: Para intentar minimizar la complejidad potencial de las dependencias
 
 P: ¿Por qué usar una función de shell para la ejecución en lugar de hacer `eval` en el script de bash?
 R: Por las siguientes razones:
-- Un objetivo es producir comandos que funcionen si se ejecutan manualmente en la consola del usuario
+- Para producir mandatos que funcionen si se ejecutan manualmente en la consola del usuario (y no solo en `bash`)
 - Dado que el script se ejecuta como un subshell, no puede realizar acciones que queremos que pasan en el shell principal
     - Ejemplo: Cambiar de directorio con `cd`
     - Ejemplo: Referenciar el directorio de inicio con `~`
+- Para crear una separación entre recuperar el comando y ejecutarlo
 
 # Ejemplos de Respuestas de Llamadas a la API de OpenAI
 

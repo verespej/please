@@ -11,11 +11,11 @@ Documentation in non-English languages:
 
 `please` allows using natural language on the command line.
 
-It attempts to minimize the dependencies and maintenance required by:
-1. Being implemented as a shell script
-2. Depending only on common command line tools
+To minimize dependencies and maintenance requirements:
+1. It's implemented as a shell script
+2. It depends only on common command line tools
 
-However, it has one major _external_ dependency, which is the [OpenAI API](https://platform.openai.com/docs/overview). This is how it goes from natural language to something we can execute on the command line.
+It has one major _external_ dependency, which is the [OpenAI API](https://platform.openai.com/docs/overview). This is how it goes from natural language to something we can execute on the command line.
 
 # Install
 
@@ -51,10 +51,25 @@ sudo chmod +x /usr/local/bin/please
 
 Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.)
 ```
-# Ensure script location is in PATH
+# Ensure user bin location is in PATH
 ! (echo ":$PATH:" | grep -q ":/usr/local/bin:") && export PATH=$PATH:/usr/local/bin
 export PLEASE_CONFIG_SHELL_TYPE="<zsh, bash, etc.>"
 export PLEASE_CONFIG_OPENAI_API_KEY="<your OpenAI key>"
+```
+
+Reload the shell config:
+```
+source <your shell config file>
+```
+
+## Setting up Automatic Execution of Commands
+
+This is optional. It executes the command resulting from the request automatically.
+
+If you use this, be careful. Even though it has lightweight protection against destructive commands, there're many it doesn't prevent.
+
+Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.)
+```
 please() {
   command_text=$(/usr/local/bin/please "$@") && {
     restricted_commands=(">" "bash" "chmod" "chown" "cp" "curl" "dd" "fdisk" "mkfs" "mv" "parted" "rm" "wget" "zsh")
@@ -153,17 +168,32 @@ COMMAND: echo "I am a zsh shell command expert."
 WARNING: The command has NOT been executed. This is because 'zsh' is a potentially destructive or otherwise dangerous operation. If you wish to execute the command, you must do so manually. DON'T execute it unless you fully understand what it does.
 ```
 
+## Known Limitations
+
+Standard shell rules apply. In particular, certain characters have special meaning in the shell. Requests that contain such characters may be passed to the program as expected.
+
+For example, `>` is used for output redirection. So, the following request won't work:
+```
+please determine if 3 > 2
+```
+
+Instead, it needs to be written as:
+```
+please determine if 3 \> 2
+```
+
 # Design Questions
 
 Q: Why use a shell script instead of something like python or node?
-A: A goal is to minimize the potential complexity of dependencies
+A: To try to minimize the potential complexity of dependencies
 
 Q: Why use a shell function for execution rather than doing `eval` in the bash script?
 A: For the following reasons:
-- A goal is to produce commands that work if run manually in the user's console
+- To produce commands that work if run manually in the user's console (and not just in `bash`)
 - Since the script runs as a subshell, it can't perform actions that might be desired in the parent shell
     - Example: Changing directory with `cd`
     - Example: Referencing the home directory with `~`
+- To create separation between retrieving the command and executing it
 
 
 # Example OpenAI API Call Responses
