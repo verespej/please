@@ -49,10 +49,12 @@ sudo curl https://raw.githubusercontent.com/verespej/please/main/please.sh -o /u
 sudo chmod +x /usr/local/bin/please
 ```
 
-Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.)
+Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.):
 ```
 # Ensure user bin location is in PATH
 ! (echo ":$PATH:" | grep -q ":/usr/local/bin:") && export PATH=$PATH:/usr/local/bin
+
+# Set up 'please'
 export PLEASE_CONFIG_SHELL_TYPE="<zsh, bash, etc.>"
 export PLEASE_CONFIG_OPENAI_API_KEY="<your OpenAI key>"
 ```
@@ -66,11 +68,11 @@ source <your shell config file>
 
 This is optional. It executes the command resulting from the request automatically.
 
-If you use this, be careful. Even though it has lightweight protection against destructive commands, there're many it doesn't prevent.
+If you use this, be careful. Even though it has lightweight protection against destructive commands, there're infinite ways to create destructive commands.
 
-Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.)
+Add the following to your shell config (e.g. `~/.zshrc`, `~/.bashrc`, etc.):
 ```
-please() {
+pleasedo() {
   command_text=$(/usr/local/bin/please "$@") && {
     restricted_commands=(">" "bash" "chmod" "chown" "cp" "curl" "dd" "fdisk" "mkfs" "mv" "parted" "rm" "wget" "zsh")
     for restricted_command in "${restricted_commands[@]}"; do
@@ -91,6 +93,8 @@ Reload the shell config:
 ```
 source <your shell config file>
 ```
+
+The function is named `pleasedo` to avoid accidentially executing a command unintentionally.
 
 # Usage
 
@@ -236,6 +240,10 @@ A: For the following reasons:
   }
 }
 ```
+
+## HTTP Error Responses
+
+A variety of situation can result in an HTTP-level error from the OpenAI API. Info on such errors is covered in the API's [error codes documentation](https://platform.openai.com/docs/guides/error-codes/api-errors).
 
 # License
 

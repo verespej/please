@@ -13,7 +13,7 @@ CACHE_DIR="$HOME/.local/share/please" # Comment out line to disable caching
 CACHE_FILE="${CACHE_DIR:+$CACHE_DIR/cache}" # Only set if CACHE_DIR is set
 CACHE_ENTRY_SEPARATOR=' :::: '
 
-OPENAI_REQUEST_MODEL="gpt-4o" # In testing, gpt-4o gives more accurate results than gpt-3.5-turbo
+OPENAI_REQUEST_MODEL="gpt-4o" # Using this model without the version suffix will use the latest default version
 OPENAI_REQUEST_MAX_TOKENS=1024
 OPENAI_REQUEST_TEMPERATURE=0.7
 
